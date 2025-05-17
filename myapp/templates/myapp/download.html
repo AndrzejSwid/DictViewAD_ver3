@@ -1,0 +1,20 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Download CSV Files{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="my-4">Download CSV Files</h1>
+            <div class="mb-4">
+                <p><a href="{% url 'main_view' %}" class="btn btn-secondary">Main Page</a></p>
+            </div>
+            <p>Click the button below to download a .zip file containing CSV files for each model in the database.</p>
+            <form method="GET" action="{% url 'download' %}">
+                <button type="submit" class="btn btn-primary">Download CSV Files</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
