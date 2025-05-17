@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Preferences</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p><a href="{% url 'main_view' %}">Main Page</a></p>
+    </div>
+    <div class="container">
+        <h1>Update Your Preferences</h1>
+        <form method="POST" action="{% url 'preferences_view' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="show_reading">
+                    <input type="checkbox" name="show_reading" id="show_reading" {% if user.userprofile.show_reading %}checked{% endif %}>
+                    Show Reading
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="show_description">
+                    <input type="checkbox" name="show_description" id="show_description" {% if user.userprofile.show_description %}checked{% endif %}>
+                    Show Description
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="show_translations">
+                    <input type="checkbox" name="show_translations" id="show_translations" {% if user.userprofile.show_translations %}checked{% endif %}>
+                    Show Translations
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="show_sentences">
+                    <input type="checkbox" name="show_sentences" id="show_sentences" {% if user.userprofile.show_sentences %}checked{% endif %}>
+                    Show Sentences
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="show_sentences_translations">
+                    <input type="checkbox" name="show_sentences_translations" id="show_sentences_translations" {% if user.userprofile.show_sentences_translations %}checked{% endif %}>
+                    Show Sentence Translations
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="show_synonyms">
+                    <input type="checkbox" name="show_synonyms" id="show_synonyms" {% if user.userprofile.show_synonyms %}checked{% endif %}>
+                    Show Synonyms
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="max_column">
+                    <input type="number" name="max_column" id="max_column" value="{{ user.userprofile.max_column }}">
+                    Max Columns
+                </label>
+            </div>
+            <div class="form-group">
+                <button type="submit">Save Preferences</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
