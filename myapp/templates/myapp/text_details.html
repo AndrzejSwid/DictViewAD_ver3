@@ -1,0 +1,86 @@
+<!-- templates/course/text_details.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Details: {{ text.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 5px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{ text.title }}</h1>
+    <p><strong>Description:</strong> {{ text.description }}</p>
+    
+    {% if text.dialect %}
+        <p><strong>Dialect:</strong> {{ text.dialect.name }}</p>
+    {% endif %}
+    
+    {% if text.comment %}
+        <p><strong>Comment:</strong> {{ text.comment }}</p>
+    {% endif %}
+
+    {% if text.link %}
+        <p><strong>Link:</strong> <a href="{{ text.link }}" target="_blank">{{ text.link }}</a></p>
+    {% endif %}
+
+    {% if text.fileName %}
+        <p><strong>File Name:</strong> {{ text.fileName }}</p>
+    {% endif %}
+
+    <h2>Categories</h2>
+    <ul>
+        {% for category in text.category.all %}
+            <li>{{ category.name }}</li>
+        {% empty %}
+            <li>No categories available.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Tags</h2>
+    <ul>
+        {% for tag in text.tags.all %}
+            <li>{{ tag.name }}</li>
+        {% empty %}
+            <li>No tags available.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Associated Meanings</h2>
+    <ul>
+        {% for meaning in meanings %}
+            <li>
+                <a href="{% url 'meaning_details_view' meaning.id %}">{{ meaning.name }}</a>
+            </li>
+        {% empty %}
+            <li>No meanings found for this text.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
