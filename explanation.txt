@@ -1,0 +1,14 @@
+
+Uruchomienie serwera:
+>>> python myapp/manage.py runserver
+
+Migracje bazy danych:
+>>> python myapp/manage.py makemigrations myapp
+>>> python myapp/manage.py migrate
+Przy "delikatnych" migracjach to wystarczy, a w przeciwnym wypadku skrypt zapyta nas co chcemy zrobić z problematycznymi polami
+
+Utworzenie konta administratora (po usunięciu pliku bazy danych, lub gdy nie może się Pan zalogować na nasze umówione konto):
+>>> python myapp/manage.py createsuperuser
+Skrypt zapyta nas kolejno o nazwę użytkownika, email, hasło i potwierdzenie hasła.
+Nasze umowne konto testowe to Filip / fikszyn3k@gmail.com (chociaż email nic nie robi) / asd
+W takim przypadku skrypt wyświetli powiadomienie, że hasło nie spełnia wymagań, ale możemy pominąć to zabezpieczenie wpisując w konsolę literkę 'y'.
