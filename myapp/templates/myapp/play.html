@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minigame</title>
+    <style>
+        #display-name {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        #display-translation {
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+            height: 60px; /* Reserve space for translation */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden; /* Initially hidden, space is still reserved */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .answer-buttons, .result-buttons, .timers-settings {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .result-buttons button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #right-btn {
+            background-color: #28a745; /* Green for right */
+            color: white;
+        }
+        #wrong-btn {
+            background-color: #dc3545; /* Red for wrong */
+            color: white;
+        }
+        .score-board {
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .score {
+            font-size: 28px;
+            font-weight: bold;
+            padding: 10px;
+        }
+        #right-score {
+            color: #28a745; /* Green */
+        }
+        #wrong-score {
+            color: #dc3545; /* Red */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Minigame</h1>
+
+    <!-- Mode Selection -->
+    <div>
+        <label><input type="radio" name="mode" value="test" checked> Test Mode</label>
+        <label><input type="radio" name="mode" value="preview"> Preview Mode</label>
+    </div>
+
+    <!-- Timers Inputs (hidden by default) -->
+    <div class="timers-settings hidden">
+        <label>First Timer (ms): <input type="number" id="timer1" value="0"></label>
+        <label>Second Timer (ms): <input type="number" id="timer2" value="1000"></label>
+        <label>Third Timer (ms): <input type="number" id="timer3" value="1000"></label>
+    </div>
+
+    <div id="display-name">Click the button to display next meaning</div>
+    <div id="display-translation">Translation will appear here</div>
+
+    <div class="test-buttons">
+        <button id="next-btn">Show Next</button>
+    </div>
+
+    <div class="preview-buttons hidden">
+        <button id="start-preview-btn">Start Preview</button>
+    </div>
+
+    <button id="shuffle-btn">Shuffle</button>
+
+    <div class="answer-buttons hidden">
+        <button id="know-btn">I know the answer</button>
+        <button id="dont-know-btn">I don't know the answer</button>
+    </div>
+
+    <div class="result-buttons hidden">
+        <button id="right-btn">I was right</button>
+        <button id="wrong-btn">I was wrong</button>
+    </div>
+
+    <div class="score-board">
+        <p>Right answers: <span id="right-score" class="score">0</span></p>
+        <p>Wrong answers: <span id="wrong-score" class="score">0</span></p>
+    </div>
+    <button id="save-scores">Save Scores</button>
+
+    <div>
+        {% for name in names %}
+            <p>{{ name }}</p>
+        {% endfor %}
+
+    </div>
+    <script>
+        let meaningNames = {{ names|safe }};
+        const meaningTranslations = {{ translations|safe }};
+        let currentMeaningId = null;
+        let mode = "test";
+        let iter = 0;
+        let shouldShuffle = false;
+        let restart = true;
+
+        const scores = {};
+
+        const displayName = document.getElementById('display-name');
+        const displayTranslation = document.getElementById('display-translation');
+        const nextBtn = document.getElementById('next-btn');
+        const knowBtn = document.getElementById('know-btn');
+        const dontKnowBtn = document.getElementById('dont-know-btn');
+        const rightBtn = document.getElementById('right-btn');
+        const wrongBtn = document.getElementById('wrong-btn');
+        const startPreviewBtn = document.getElementById('start-preview-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const rightScoreDisplay = document.getElementById('right-score');
+        const wrongScoreDisplay = document.getElementById('wrong-score');
+
+        const answerButtons = document.querySelector('.answer-buttons');
+        const resultButtons = document.querySelector('.result-buttons');
+        const previewButtons = document.querySelector('.preview-buttons');
+        const testButtons = document.querySelector('.test-buttons');
+        
+        
+        const timerInputs = document.querySelector('.timers-settings');
+        
+        let rightAnswers = 0;
+        let wrongAnswers = 0;
+
+        let timer1, timer2, timer3;
+
+        // Switch modes (Test or Preview)
+        document.querySelectorAll('input[name="mode"]').forEach((radio) => {
+            radio.addEventListener('change', (e) => {
+                mode = e.target.value;
+                if (mode === 'preview') {
+                    timerInputs.classList.remove('hidden');
+                    previewButtons.classList.remove('hidden');
+
+                    testButtons.classList.add('hidden');
+                    answerButtons.classList.add('hidden');
+                    resultButtons.classList.add('hidden');
+                    clearTimers(); // Clear any running timers when switching modes
+                } else if(mode === 'test'){
+                    timerInputs.classList.add('hidden');
+                    previewButtons.classList.add('hidden');
+
+                    displayName.classList.remove('hidden');
+                    testButtons.classList.remove('hidden');
+                    answerButtons.classList.remove('hidden');
+                    resultButtons.classList.add('hidden');
+                    clearTimers(); // Clear any running timers when switching modes
+                }
+            });
+        });
+
+        function changeScore(key, score) {
+            if (!scores[key.textContent]){
+                scores[key.textContent] = 0;
+            }
+
+            scores[key.textContent] += score;
+            //console.log(scores);
+        }
+
+        function showRandomMeaning(index = null) {
+            if (meaningNames.length > 0) {
+                if (index == null) {
+                    index = Math.floor(Math.random() * meaningNames.length);
+                }
+                
+                const randomMeaning = meaningNames[index];
+
+                if (index >= meaningNames.length) {
+                    displayName.innerText = 'OUT OF DATA';
+                    displayTranslation.innerText = 'Please shuffle or try again';
+
+                    displayName.style.visibility = 'visible';
+                    displayTranslation.style.visibility = 'visible';
+                    start = true;
+                    return;
+                }
+
+                iter++;
+                displayName.innerText = randomMeaning;
+
+                if (meaningTranslations[randomMeaning]) {
+                    displayTranslation.innerText = meaningTranslations[randomMeaning];
+                } else {
+                    displayTranslation.innerText = 'No translation available';
+                }
+
+                if (mode === "test") {
+                    displayTranslation.style.visibility = 'hidden';
+                    answerButtons.classList.remove('hidden');
+                    resultButtons.classList.add('hidden');
+                } else {
+                    startPreviewMode();
+                }
+            } else {
+                displayName.innerText = 'No data available.';
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showNextMeaning(){
+            displayName.style.visibility = 'visible';
+            if (shouldShuffle) {
+                iter = 0;
+                meaningNames = shuffleArray(meaningNames);
+                shouldShuffle = false;
+            }
+
+            showRandomMeaning(iter);
+        }
+
+        function startPreviewMode() {
+            
+            const t1 = parseInt(document.getElementById('timer1').value, 10);
+            const t2 = parseInt(document.getElementById('timer2').value, 10);
+            const t3 = parseInt(document.getElementById('timer3').value, 10);
+
+            if (shouldShuffle) {
+                iter = 0;
+                meaningNames = shuffleArray(meaningNames);
+                shouldShuffle = false;
+            }
+
+            displayName.style.visibility = 'hidden';
+            displayTranslation.style.visibility = 'hidden';
+
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+            clearTimeout(timer3);
+
+
+            // Timer 1: Show meaning
+            timer1 = setTimeout(() => {
+                displayName.style.visibility = 'visible';
+                displayTranslation.style.visibility = 'hidden';
+
+                // Timer 2: Show meaning and translation
+                timer2 = setTimeout(() => {
+                    displayTranslation.style.visibility = 'visible';
+
+                    // Timer 3: Hide both, and restart timers
+                    timer3 = setTimeout(() => {
+                        displayName.style.visibility = 'hidden';
+                        displayTranslation.style.visibility = 'hidden';
+                        showRandomMeaning(iter); // Restart the process by showing the next meaning
+                    }, t3);
+                }, t2);
+            }, t1);
+        }
+
+        function clearTimers() {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+            clearTimeout(timer3);
+        }
+
+        function showTranslation() {
+            displayTranslation.style.visibility = 'visible';
+        }
+
+        function handleRightAnswer() {
+            rightAnswers++;
+            rightScoreDisplay.innerText = rightAnswers;
+            changeScore(displayName, 1);
+            showNextMeaning(); // Instantly show another random meaning
+        }
+
+        function handleWrongAnswer() {
+            wrongAnswers++;
+            wrongScoreDisplay.innerText = wrongAnswers;
+            changeScore(displayName, -1);
+            showNextMeaning(); // Instantly show another random meaning
+        }
+
+        nextBtn.addEventListener('click', showNextMeaning);
+        knowBtn.addEventListener('click', showTranslation);
+        dontKnowBtn.addEventListener('click', showTranslation);
+        knowBtn.addEventListener('click', () => resultButtons.classList.remove('hidden'));
+        dontKnowBtn.addEventListener('click', () => resultButtons.classList.remove('hidden'));
+        rightBtn.addEventListener('click', handleRightAnswer);
+        wrongBtn.addEventListener('click', handleWrongAnswer);
+
+        startPreviewBtn.addEventListener('click', startPreviewMode);
+
+        // Save scores and send to the backend
+        document.getElementById('save-scores').addEventListener('click', () => {
+            // console.log("Sending scores:", scores); // Just for debugging
+
+            // Send scores to the backend using fetch (or you can use AJAX if preferred)
+            fetch('/save-scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(scores),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        shuffleBtn.addEventListener('click', () => {
+            shouldShuffle = true;
+            iter = 0;
+            displayTranslation.style.visibility = 'hidden';
+            displayName.innerText = 'Shuffled...';
+            displayTranslation.innerText = '';
+        });
+    </script>
+
+</body>
+</html>
