@@ -1,0 +1,11 @@
+{% for field in fields %}
+<div class="form-group">
+    <label for="{{ field.id }}">{{ field.label }}</label>
+    <select name="{{ field.name }}" id="{{ field.id }}" class="form-control">
+        <option value="">{{ field.placeholder }}</option>
+        {% for option in field.options %}
+            <option value="{{ option.id }}" {% if option.id|stringformat:"s" == field.selected %}selected{% endif %}>{{ option.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endfor %}
