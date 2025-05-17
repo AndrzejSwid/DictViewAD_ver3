@@ -1,0 +1,11 @@
+<h3>Filter Texts</h3>
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="search_type" value="text_search">
+
+    {% include 'myapp/partials/_filter_dropdowns.html' with fields=text_filters %}
+
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+{% include 'myapp/partials/_results_table.html' with items=texts %}
