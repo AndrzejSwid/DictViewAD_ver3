@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+</head>
+<body>
+
+    <h1>Upload File</h1>
+    <div>
+        <p><a href="{% url 'main_view' %}">Main Page</a></p>
+    </div>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="single_upload">
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+    
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="all_upload">
+        <button type="submit">Load files from documents folder</button>
+    </form>
+
+</body>
+</html>
