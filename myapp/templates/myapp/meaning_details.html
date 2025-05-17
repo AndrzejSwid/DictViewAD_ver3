@@ -1,0 +1,88 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}{{ meaning.name }} Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">{{ meaning.name }}</h1>
+
+    <p><strong>Reading:</strong> {{ meaning.reading }}</p>
+    <p><strong>Kana:</strong> {{ meaning.kana }}</p>
+    <p><strong>Description:</strong> {{ meaning.description }}</p>
+    
+    {% if meaning.dialect %}
+        <p><strong>Dialect:</strong> {{ meaning.dialect.name }}</p>
+    {% endif %}
+    
+    {% if meaning.speech_category %}
+        <p><strong>Speech Category:</strong> {{ meaning.speech_category.name }}</p>
+    {% endif %}
+
+    {% if meaning.grammar_notes.all %}
+        <h4>Grammar Notes:</h4>
+        <ul>
+            {% for note in meaning.grammar_notes.all %}
+                <li>{{ note.name }}</li>
+            {% empty %}
+                <li>No grammar notes available.</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if pictures %}
+        <h4>Pictures:</h4>
+        <div class="row">
+            {% for picture in pictures %}
+                <div class="col-md-3 mb-3">
+                    <img src="{{ picture }}" alt="Picture" class="img-fluid">
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if mp3_files %}
+        <h4>MP3 Files:</h4>
+        <div class="row">
+            {% for mp3_file in mp3_files %}
+                <div class="col-md-6 mb-3">
+                    <audio controls class="w-100">
+                        <source src="{{ mp3_file }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if youtube_links %}
+        <h4>YouTube Links:</h4>
+        <ul>
+            {% for youtube_link in youtube_links %}
+                <li><a href="{{ youtube_link }}" target="_blank">{{ youtube_link }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if sources %}
+        <h4>Sources:</h4>
+        <ul>
+            {% for source_link in sources %}
+                <li><a href="{{ source_link }}" target="_blank">{{ source_link }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if meaning.comment %}
+        <p><strong>Comment:</strong> {{ meaning.comment }}</p>
+    {% endif %}
+
+    {% if texts %}
+        <h4>Texts:</h4>
+        <ul>
+            {% for text in texts %}
+                <li><a href="{% url 'text_details_view' text.id %}">{{ text.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}
