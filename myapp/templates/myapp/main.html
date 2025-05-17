@@ -1,0 +1,15 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Main Page{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="mb-4">Main Page</h1>
+    <div class="list-group">
+        <a href="{% url 'database_view' %}" class="list-group-item list-group-item-action">View Database</a>
+        <a href="{% url 'preferences_view' %}" class="list-group-item list-group-item-action">Update Preferences</a>
+        <a href="{% url 'upload' %}" class="list-group-item list-group-item-action">Upload Menu</a>
+        <a href="{% url 'download' %}" class="list-group-item list-group-item-action">Download Menu</a>
+    </div>
+</div>
+{% endblock %}
