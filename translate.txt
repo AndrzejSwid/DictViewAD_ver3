@@ -1,0 +1,25 @@
+ENGLISH
+mainword = Word
+language = language (EN -> English)
+words = meanings{
+    jp_word = name
+}
+sentences = sentence{
+    jp_sent = translation
+    en_sent = content
+}
+idioms = sentence{
+    idiom = content
+    examples = translation (1 string)
+}
+JAPANESE
+mainword = Word
+language = language
+words = meanings{
+    jp_word = description
+    en_word = name
+}
+sentences = sentence{
+    jp_sent = content
+    en_sent = translation
+}
