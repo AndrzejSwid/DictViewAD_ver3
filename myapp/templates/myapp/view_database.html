@@ -1,0 +1,40 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Database Viewer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <p><a href="{% url 'main_view' %}" class="btn btn-primary mb-3">Main Page</a></p>
+
+    <h2>Choose Search Type</h2>
+    <div class="form-group mb-4">
+        <label for="search_type">Select Search Type:</label>
+        <select id="search_type" name="search_type" class="form-control" onchange="showForm()">
+            <option value="">-- Select a Search Type --</option>
+            <option value="meaning_search" {% if selected_search_type == "meaning_search" %}selected{% endif %}>Meaning Search</option>
+            <option value="text_search" {% if selected_search_type == "text_search" %}selected{% endif %}>Text Search</option>
+        </select>
+    </div>
+
+    <!-- Include Meaning Search Form -->
+    <div id="meaning_form" style="display: none;">
+        {% include 'myapp/partials/_meanings_search.html' %}
+    </div>
+
+    <!-- Include Text Search Form -->
+    <div id="text_form" style="display: none;">
+        {% include 'myapp/partials/_texts_search.html' %}
+    </div>
+</div>
+
+<script>
+    function showForm() {
+        var searchType = document.getElementById("search_type").value;
+        document.getElementById("meaning_form").style.display = searchType === "meaning_search" ? "block" : "none";
+        document.getElementById("text_form").style.display = searchType === "text_search" ? "block" : "none";
+    }
+
+    // Trigger correct form visibility on load
+    showForm();
+</script>
+{% endblock %}
