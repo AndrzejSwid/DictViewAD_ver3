@@ -1,0 +1,99 @@
+<h3>Filter Meanings</h3>
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="search_type" value="meaning_search">
+
+    <!-- Category -->
+    <div class="form-group">
+        <label for="category">Choose a category:</label>
+        <select name="category" id="category" class="form-control">
+            <option value="">-- Select a Category --</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category_id %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Language -->
+    <div class="form-group">
+        <label for="language">Choose a language:</label>
+        <select name="language" id="language" class="form-control">
+            <option value="">-- Select a Language --</option>
+            {% for language in languages %}
+                <option value="{{ language.id }}" {% if language.id|stringformat:"s" == selected_language_id %}selected{% endif %}>{{ language.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Dialect -->
+    <div class="form-group">
+        <label for="dialect">Choose a dialect:</label>
+        <select name="dialect" id="dialect" class="form-control">
+            <option value="">-- Select a Dialect --</option>
+            {% for dialect in dialects %}
+                <option value="{{ dialect.id }}" {% if dialect.id|stringformat:"s" == selected_dialect_id %}selected{% endif %}>{{ dialect.language.name }} - {{ dialect.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Tags -->
+    <div class="form-group">
+        <label for="tag">Choose a tag:</label>
+        <select name="tag" id="tag" class="form-control">
+            <option value="">-- Select a Tag --</option>
+            {% for tag in tags %}
+                <option value="{{ tag.id }}" {% if tag.id|stringformat:"s" == selected_tag_id %}selected{% endif %}>{{ tag }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Grammar Notes -->
+    <div class="form-group">
+        <label for="grammar_note">Choose a grammar note:</label>
+        <select name="grammar_note" id="grammar_note" class="form-control">
+            <option value="">-- Select a Grammar Note --</option>
+            {% for grammar_note in grammar_notes %}
+                <option value="{{ grammar_note.id }}" {% if grammar_note.id|stringformat:"s" == selected_grammar_note_id %}selected{% endif %}>{{ grammar_note }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Speech Category -->
+    <div class="form-group">
+        <label for="speech_category">Choose a speech category:</label>
+        <select name="speech_category" id="speech_category" class="form-control">
+            <option value="">-- Select a Speech Category --</option>
+            {% for speech_category in speech_categories %}
+                <option value="{{ speech_category.id }}" {% if speech_category.id|stringformat:"s" == selected_speech_category_id %}selected{% endif %}>{{ speech_category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Level -->
+    <div class="form-group">
+        <label for="level">Choose a level:</label>
+        <select name="level" id="level" class="form-control">
+            <option value="">-- Select a Level --</option>
+
+            <option value="{{ 0 }}" {% if i == selected_level %}selected{% endif %}>{{ 0 }}</option>
+            <option value="{{ 1 }}" {% if i == selected_level %}selected{% endif %}>{{ 1 }}</option>
+            <option value="{{ 2 }}" {% if i == selected_level %}selected{% endif %}>{{ 2 }}</option>
+            <option value="{{ 3 }}" {% if i == selected_level %}selected{% endif %}>{{ 3 }}</option>
+            <option value="{{ 4 }}" {% if i == selected_level %}selected{% endif %}>{{ 4 }}</option>
+            <option value="{{ 5 }}" {% if i == selected_level %}selected{% endif %}>{{ 5 }}</option>
+            
+        </select>
+    </div>
+
+    <!-- Score -->
+    <div class="form-group">
+        <label for="score">Score below:</label>
+        <input type="number" name="score" id="score" class="form-control" value="{{ selected_score }}">
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Results Table -->
+{% include 'myapp/partials/_results_table.html' with items=meanings %}
